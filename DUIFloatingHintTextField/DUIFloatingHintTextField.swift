@@ -9,9 +9,16 @@
 import Foundation
 import UIKit
 
+enum TextFieldState{
+    case ok
+    case error
+    case warning
+    case darkerBg
+}
 
 
 class DUIFloatingHintTextField : UITextField{
+    var aLayer  = CALayer()
     
     //Set Values from runtime attribute
     var floatingLabelTextColor : UIColor!{
@@ -30,11 +37,13 @@ class DUIFloatingHintTextField : UITextField{
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-       setUp()
+        layer.addSublayer(aLayer)
+        setUp()
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        layer.addSublayer(aLayer)
         setUp()
     }
     
@@ -42,15 +51,13 @@ class DUIFloatingHintTextField : UITextField{
         setUpHintLabel()
         self.contentVerticalAlignment = .bottom
         self.contentHorizontalAlignment = .left
+        
         calcHeightForTextEditable()
     }
     
     func setUpHintLabel(){
         hintLabel.isOpaque = false
-//        if let f = self.font{
-//            hintLabel.font = UIFont(name: f.fontName, size: f.pointSize / 1.7)
-//        }
-        
+        hintLabel.textColor = UIColor.blue
     }
     
     override func didMoveToSuperview() {
@@ -63,6 +70,57 @@ class DUIFloatingHintTextField : UITextField{
         super.removeFromSuperview()
         self.removeTarget(self, action: #selector(DUIFloatingHintTextField.textEditing), for: UIControlEvents.editingChanged)
         self.removeTarget(self, action: #selector(DUIFloatingHintTextField.textEditing), for: UIControlEvents.editingDidEnd)
+    }
+    
+    override var bounds: CGRect {
+        didSet {
+            self.setNeedsDisplay()
+        }
+    }
+    
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        aLayer.frame = CGRect(x: rect.origin.x, y: rect.origin.y + rect.size.height - 1 , width: rect.size.width, height: 0.5)
+        
+        switch textFieldState{
+        case .error:
+            aLayer.backgroundColor = UIColor.red.cgColor
+            break
+        case .warning:
+            aLayer.backgroundColor = UIColor.orange.cgColor
+            break
+        case .ok:
+            aLayer.backgroundColor = UIColor.darkGray.cgColor
+            break
+        case .darkerBg:
+            aLayer.backgroundColor = UIColor.white.cgColor
+            break
+        }
+    }
+    
+    var textFieldState : TextFieldState = .ok{
+        didSet{
+            if textFieldState == .error || textFieldState == .warning{
+                let animation = CABasicAnimation(keyPath: "position")
+                animation.duration = 0.07
+                animation.repeatCount = 4
+                animation.autoreverses = true
+                animation.fromValue = NSValue(cgPoint: CGPoint(x:self.center.x - 10, y:self.center.y))
+                animation.toValue = NSValue(cgPoint: CGPoint(x:self.center.x + 10, y:self.center.y))
+                self.layer.add(animation, forKey: "position")
+            }
+            self.setNeedsDisplay()
+        }
+    }
+    
+    override var text: String?{
+        get{
+            return super.text
+        }
+        set{
+            super.text = newValue
+            textEditing()
+        }
     }
     
     func textEditing() -> Void {
@@ -123,5 +181,5 @@ class DUIFloatingHintTextField : UITextField{
         }
         hintLabelHeight = availableHeightForHint
     }
-
+    
 }
