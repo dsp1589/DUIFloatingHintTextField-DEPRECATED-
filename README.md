@@ -7,5 +7,9 @@ Simple iOS UITextField with Floating label Placeholder
 
 ![Alt text](/../master/out.gif?raw=true)
 
-![Alt text](/../master/warning.png?raw=true)![Alt text](/../master/error.png?raw=true)
+#Warning State
+![Alt text](/../master/warning.png?raw=true)
+
+#Error State
+![Alt text](/../master/error.png?raw=true)
 
