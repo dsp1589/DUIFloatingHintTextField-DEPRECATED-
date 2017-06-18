@@ -1,3 +1,4 @@
+# DEPRECATED - Use other DUIFloatingHintTextField in same name. which is better animated 
 # DUIFloatingHintTextField (with warning, error, ok state)
 Simple iOS UITextField with Floating label Placeholder
 
